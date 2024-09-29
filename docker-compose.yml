@@ -14,7 +14,7 @@ services:
       - '/home/skameika/project/candyshop:/var/www/html'
 
   postgres:
-    image: postgres:13
+    image: postgres
     ports:
       - 90:5432
     environment:
