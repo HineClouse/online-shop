@@ -1,19 +1,26 @@
-<form action="handle_registration.php">
+<form action="handle_registration.php" method="POST">
     <div class="container">
-        <h1>Register</h1>
-        <p>Please fill in this form to create an account.</p>
+        <h1>Регистрация</h1>
+        <p>Заполните данные для регистрации</p>
         <hr>
 
+
         <label for="name"><b>Name</b></label>
+        <label style="color: red"><?php print_r($errors['name']);?></label>
         <input type="text" placeholder="Enter Name" name="name" id="name" required>
 
+
         <label for="email"><b>Email</b></label>
+        <label style="color: red"><?php print_r($errors['email']);?></label>
         <input type="text" placeholder="Enter Email" name="email" id="email" required>
 
+
         <label for="psw"><b>Password</b></label>
+        <label style="color: red"><?php print_r($errors['psw']);?></label>
         <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
 
         <label for="psw-repeat"><b>Repeat Password</b></label>
+        <label style="color: red"><?php print_r($errors['psw-repeat']);?></label>
         <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
         <hr>
 

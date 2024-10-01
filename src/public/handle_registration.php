@@ -1,18 +1,76 @@
 <?php
+function validate(): array
+{
+    $errors = [];
 
-$name = $_GET['name'];
-$email = $_GET['email'];
-$password = $_GET['psw'];
-$passwordRep = $_GET['psw-repeat'];
+    if (isset($_POST['name'])){
+        $name = $_POST['name'];
 
-//print_r($name . "\n" . $email . "\n" . $password);
+        if (empty($name)) {
+            $errors['name'] = "Имя не должно быть пустым.";
+        } elseif (strlen($name) < 2) {
+            $errors['name'] = "Имя не должно быть короче 2 букв.";
+        }
+    } else {
+        $errors['name'] = 'Поле name должно быть заполнено';
+    }
 
-$pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
+    if (isset($_POST['email'])){
+        $email = $_POST['email'];
 
-$pdo->exec("INSERT INTO users (name, email,password) VALUES ('$name', '$email', '$password')");
+        if (empty($email)) {
+            $errors['email'] = "Email не должен быть пустым.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = "Неверный формат email.";
+        }
+    } else {
+        $errors['email'] = 'Поле email должно быть заполнено';
+    }
 
-$result = $pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 1");
+    if (isset($_POST['psw'])){
+        $password = $_POST['psw'];
 
-echo "\n";
+        if (empty($password)) {
+            $errors['pws'] = "Пароль не должен быть пустым.";
+        } elseif (strlen($password) < 6) {
+            $errors['psw'] = "Пароль должен быть не менее 6 символов.";
+        }
+    }
 
-print_r($result->fetch());
+    if (isset($_POST['psw-repeat'])){
+        $passwordRep = $_POST['psw-repeat'];
+
+        if (empty($passwordRep)) {
+            $errors['psw-repeat'] = "Повтор пароля не должен быть пустым.";
+        } elseif ($password !== $passwordRep) {
+            $errors['psw-repeat'] = "Пароли не совпадают.";
+        }
+    }
+
+    return $errors;
+}
+
+$errors = validate();
+
+if (!empty($errors)) {
+    foreach ($errors as $error) {
+        echo $error . "<br>";
+    }
+} else {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['psw'];
+    $passwordRep = $_POST['psw-repeat'];
+    $pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
+    $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+    $hash = password_hash($_POST['psw'], PASSWORD_DEFAULT);
+    $stmt->execute(['name' => $_POST['name'], 'email' => $_POST['email'], 'password' => $hash]);
+
+    echo "Данные успешно сохранены в базу данных.";
+}
+
+require_once './get_registration.php';
+
+?>
+
+
