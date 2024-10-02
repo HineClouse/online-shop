@@ -4,24 +4,29 @@
         <p>Заполните данные для регистрации</p>
         <hr>
 
-
         <label for="name"><b>Name</b></label>
-        <label style="color: red"><?php print_r($errors['name']);?></label>
-        <input type="text" placeholder="Enter Name" name="name" id="name" required>
-
+        <input type="text"
+               name="name"
+               id="name"
+               placeholder="<?php if (empty($errors['name'])) { echo 'enter your name'; } else { echo $errors['name']; } ?>" required>
 
         <label for="email"><b>Email</b></label>
-        <label style="color: red"><?php print_r($errors['email']);?></label>
-        <input type="text" placeholder="Enter Email" name="email" id="email" required>
-
+        <input type="text"
+               name="email"
+               id="email"
+               placeholder="<?php if (empty($errors['email'])) { echo 'enter your email'; } else { echo $errors['email']; } ?>" required>
 
         <label for="psw"><b>Password</b></label>
-        <label style="color: red"><?php print_r($errors['psw']);?></label>
-        <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+        <input type="password"
+               name="psw"
+               id="psw"
+               placeholder="<?php if (empty($errors['psw'])) { echo 'enter your password'; } else { echo $errors['psw']; } ?>" required>
 
         <label for="psw-repeat"><b>Repeat Password</b></label>
-        <label style="color: red"><?php print_r($errors['psw-repeat']);?></label>
-        <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+        <input type="password"
+               name="psw-repeat"
+               id="psw-repeat"
+               placeholder="<?php if (empty($errors['psw-repeat'])) { echo 'repeat your password'; } else { echo $errors['psw-repeat']; } ?>" required>
         <hr>
 
         <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
@@ -34,7 +39,6 @@
 </form>
 
 <style>
-
     * {box-sizing: border-box}
 
     /* Add padding to containers */
@@ -76,7 +80,7 @@
     }
 
     .registerbtn:hover {
-        opacity:1;
+        opacity: 1;
     }
 
     /* Add a blue text color to links */
