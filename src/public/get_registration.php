@@ -1,4 +1,4 @@
-<form action="handle_registration.php" method="POST">
+<form action="/registration" method="POST">
     <div class="container">
         <h1>Регистрация</h1>
         <p>Заполните данные для регистрации</p>

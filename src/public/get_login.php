@@ -3,7 +3,7 @@
 <h3>Enter your login </h3>
     <?php echo $errors['login'] ?? '';?>
     <?php echo $errors['password'] ?? '';?>
-<form action="handle_login.php" method="POST">
+<form action="/login" method="POST">
     <label for="login">
 
         Username:

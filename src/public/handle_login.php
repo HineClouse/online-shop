@@ -25,7 +25,10 @@ if (empty($errors)) {
     } else {
         $passwordFromDb = $data['password'];
         if (password_verify($password, $passwordFromDb)) {
-            setcookie('user_id', $data['id']);
+            //setcookie('user_id', $data['id']);
+            session_start();
+                $_SESSION['user_id'] = $data['id'];
+            header("Location:/catalog");
         } else {
             $errors['password'] = 'Пользователь с указанными данными не существует';
         }

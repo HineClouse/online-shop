@@ -1,7 +1,7 @@
 <?php
 
-
-if (!isset($_COOKIE['user_id'])){
+session_start();
+if (!isset($_SESSION['user_id'])){
     header("Location:/get_login.php");
 }
 
@@ -9,7 +9,7 @@ $products = [];
 
 $pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
 
-$stmt = $pdo->query("SELECT name, info, price FROM products" );
+$stmt = $pdo->query("SELECT * FROM products" );
 $products = $stmt->fetchAll();
 
 print_r($products);

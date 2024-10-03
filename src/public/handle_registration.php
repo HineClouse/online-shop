@@ -66,10 +66,10 @@ if (!empty($errors)) {
     $hash = password_hash($_POST['psw'], PASSWORD_DEFAULT);
     $stmt->execute(['name' => $_POST['name'], 'email' => $_POST['email'], 'password' => $hash]);
 
-    echo "Данные успешно сохранены в базу данных.";
+    header("Location:/login");
 }
 
-require_once './get_registration.php';
+//require_once './get_registration.php';
 
 ?>
 
