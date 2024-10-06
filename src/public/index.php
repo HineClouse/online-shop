@@ -25,7 +25,28 @@ elseif ($requestUri === '/registration') {
 }
 // Обработка маршрута /catalog
 elseif ($requestUri === '/catalog') {
-    require_once './catalog.php';
+    if ($requestMethod === 'GET') {
+        require_once './catalog.php';
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
+}
+elseif ($requestUri === '/add-product') {
+    if ($requestMethod === 'GET') {
+        require_once './get_add_product.php';
+    } elseif ($requestMethod === 'POST') {
+        require_once './handle_add_product.php';
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
+}
+
+elseif ($requestUri === '/cart') {
+    if ($requestMethod === 'GET') {
+        require_once './cart.php';
+    } else {
+        echo "$requestMethod не поддерживается адресом $requestUri";
+    }
 }
 // Обработка всех остальных маршрутов
 else {
