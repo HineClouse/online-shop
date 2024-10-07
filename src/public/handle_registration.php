@@ -69,7 +69,7 @@ if (!empty($errors)) {
     header("Location:/login");
 }
 
-//require_once './get_registration.php';
+require_once './get_registration.php';
 
 ?>
 

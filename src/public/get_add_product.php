@@ -6,7 +6,7 @@
 
         <label for="name"><b>Product-id</b></label>
         <label><?php if (isset($errors['product-id'])):?>
-        <?php print_r($errors['product-id']); ?>
+        <?php print_r($errors['product-id'] ?? null); ?>
         <?php endif?>
         </label>
         <input type="text"
