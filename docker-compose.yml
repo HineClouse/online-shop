@@ -12,6 +12,7 @@ services:
     build: '/home/skameika/project/candyshop/docker/php'
     volumes:
       - '/home/skameika/project/candyshop:/var/www/html'
+      - './docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
 
   postgres:
     image: postgres

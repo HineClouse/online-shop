@@ -3,7 +3,7 @@
 $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
-// Обработка маршрута /login
+
 if ($requestUri === '/login') {
     if ($requestMethod === 'GET') {
         require_once './get_login.php';
@@ -13,7 +13,7 @@ if ($requestUri === '/login') {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
 }
-// Обработка маршрута /registration
+
 elseif ($requestUri === '/registration') {
     if ($requestMethod === 'GET') {
         require_once './get_registration.php';
@@ -23,7 +23,7 @@ elseif ($requestUri === '/registration') {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
 }
-// Обработка маршрута /catalog
+
 elseif ($requestUri === '/catalog') {
     if ($requestMethod === 'GET') {
         require_once './catalog.php';
@@ -48,7 +48,7 @@ elseif ($requestUri === '/cart') {
         echo "$requestMethod не поддерживается адресом $requestUri";
     }
 }
-// Обработка всех остальных маршрутов
+
 else {
     http_response_code(404);
     require_once './404.php';
