@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location:/login");
 }
 
-function validate (): array
+function validateProduct (): array
 {
     $errors = [];
 
@@ -52,7 +52,7 @@ function validate (): array
     return $errors;
 }
 
-$errors = validate();
+$errors = validateProduct();
 
 if (!empty($errors)) {
     foreach ($errors as $error) {

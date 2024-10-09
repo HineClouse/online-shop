@@ -1,39 +1,9 @@
 <?php
 
-$errors = [];
+require_once './Classes/User.php';
 
-if (isset($_POST['login'])) {
-    $login = $_POST['login'];
-} else {
-    $errors['login'] = 'Пользователь с указанными данными не существует';
-}
+$log = new User();
 
-if (isset($_POST['password'])) {
-    $password = $_POST['password'];
-} else {
-    $errors['password'] = 'Пользователь с указанными данными не существует';
-}
+$log->login();
 
-if (empty($errors)) {
-    $pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :login");
-    $stmt->execute(['login' => $login]);
-    $data = $stmt->fetch();
-
-    if ($data === false) {
-        $errors['login'] = 'Пользователь с указанными данными не существует';
-    } else {
-        $passwordFromDb = $data['password'];
-        if (password_verify($password, $passwordFromDb)) {
-            //setcookie('user_id', $data['id']);
-            session_start();
-                $_SESSION['user_id'] = $data['id'];
-            header("Location:/catalog");
-        } else {
-            $errors['password'] = 'Пользователь с указанными данными не существует';
-        }
-    }
-}
-
-require_once './get_login.php';
 ?>
