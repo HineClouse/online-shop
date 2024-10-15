@@ -1,6 +1,8 @@
 <?php
 
-//namespace Model;
+namespace Model;
+
+use \PDO;
 class User
 {
     private $pdo;

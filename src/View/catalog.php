@@ -1,96 +1,88 @@
-<div class="container">
-    <h3>Catalog</h3>
-    <div class="card-deck">
-        <?php foreach($products as $product): ?>
-        <div class="card text-center">
-            <a href="#">
-                <div class="card-header">
-                    Hit!
-                </div>
-                <img class="card-img-top" src="<?php echo $product['image'];?>" alt="Card image">
-                <div class="card-body">
-                    <p class="card-text text-muted"><?php echo $product['name'];?></p>
-                    <a href="#"><h5 class="card-title"><?php echo $product['description'];?></h5></a>
-                    <div class="card-footer">
-                        <?php echo $product['price'];?>
+<div class="container mt-5 pb-5">
+    <h2 class="text-center text-uppercase font-weight-bold mb-5">Наш каталог</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <?php foreach ($products as $product): ?>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 rounded-lg" style="border: 2px solid #ffc107;">
+                    <img class="card-img-top rounded-top" src="<?php echo $product['image']; ?>" alt="Card image">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product['name']; ?></h5>
+                        <p class="card-text text-muted"><?php echo $product['description']; ?></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-dark font-weight-bold"><?php echo $product['price']; ?></span>
+                            <button class="btn btn-sm btn-outline-dark">Подробнее</button>
+                        </div>
                     </div>
                 </div>
-            </a>
-        </div>
-            <form action="/add-product" method="POST">
-                <div class="container">
-                    <h1>Корзина</h1>
-                    <hr>
-
-                    <label for="name"><b>Product-id</b></label>
-                    <label><?php if (isset($errors['product-id'])): ?>
-                            <?php print_r($errors['product-id'] ?? null); ?>
-                        <?php endif ?>
-                    </label>
-                    <input type="hidden"
-                           name="product-id"
-                           id="product-id"
-                           value="<?= $product['id']?>
-                           placeholder="Enter product-id" required>
-
-                    <label for="name"><b>Amount</b></label>
-                    <label>
-                        <?php print_r($errors['amount'] ?? null); ?>
-                    </label>
-                    <input type="text"
-                           name="amount"
-                           id="amount"
-                           placeholder="Enter amount" required>
-                    <hr>
-                    <button type="submit" class="registerbtn">Добавить корзину</button>
-                </div>
-
-                <div class="container signin">
-                    <p>Already have an account? <a href="#">Sign in</a>.</p>
-                </div>
-            </form>
-        <?php endforeach ?>
-
+                <form action="/add-product" method="POST" class="mt-3">
+                    <input type="hidden" name="product-id" value="<?= $product['id'] ?>">
+                    <div class="form-group">
+                        <label for="amount" class="form-label">Количество</label>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Количество" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 mt-2">Добавить в корзину</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
 
 <style>
     body {
-        font-style: sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right, #ffecd2, #fcb69f);
+        color: #333;
     }
-
-    a {
-        text-decoration: none;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-
-    a:hover {
-        text-decoration: none;
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
-
-    h3 {
-        line-height: 3em;
+    .card-body {
+        padding: 1.5rem;
     }
-
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .card-text {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .btn-outline-dark {
+        border: 1px solid #343a40;
+        color: #343a40;
+    }
+    .btn-outline-dark:hover {
+        background-color: #343a40;
+        color: white;
+    }
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+        color: #333;
+    }
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
     .card {
-        max-width: 16rem;
+        transition: box-shadow .3s ease-in-out;
+        border-radius: 10px;
+        overflow: hidden;
     }
-
     .card:hover {
-        box-shadow: 1px 2px 10px lightgray;
-        transition: 0.2s;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
     }
-
-    .card-header {
-        font-size: 13px;
-        color: gray;
-        background-color: white;
-    }
-
     .text-muted {
-        font-size: 11px;
-    }
-
-    .card-footer{
-        font-weight: bold;
-        font-size: 18px;
-        background-color: white;
+        color: #6c757d !important;
     }
 </style>

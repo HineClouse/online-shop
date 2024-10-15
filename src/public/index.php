@@ -3,31 +3,24 @@
 use Controller\UserController;
 use Controller\ProductController;
 
-$autoloadCommon = function ($className) {};
+$autoloadCommon = function ($className) {
+};
 
-$autoloadController = function (string $className){
+$autoloader = function (string $className) {
     $path = str_replace('\\', '/', $className);
-    $path ="./../Controller/$className.php";
-    if(file_exists($path)){
+    $path = './../' . $path . '.php';
+    if (file_exists($path)) {
         require_once $path;
         return true;
     }
     return false;
 };
 
-$autoloadModel = function (string $className){
-    $path = "./../Model/$className.php";
-    if(file_exists($path)){
-        require_once $path;
-        return true;
-    }
-    return false;
-};
-spl_autoload_register($autoloadController);
-spl_autoload_register($autoloadModel);
+spl_autoload_register($autoloader);
 
 $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
+
 
 switch ($requestUri) {
     case '/login':
@@ -59,10 +52,9 @@ switch ($requestUri) {
         }
         break;
     case '/add-product':
-        if ($requestMethod === 'GET') {
-            require_once '../View/addProduct.php';
-        } elseif ($requestMethod === 'POST') {
-            require_once '../View/handle_add_product.php';
+        if ($requestMethod === 'POST') {
+            $productController = new ProductController();
+            $productController->addProduct();
         } else {
             echo "$requestMethod не поддерживается для $requestUri";
         }
