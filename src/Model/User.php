@@ -2,16 +2,10 @@
 
 namespace Model;
 
-use \PDO;
-class User
+use PDO;
+
+class User extends Model
 {
-    private $pdo;
-
-    public function __construct()
-    {
-        $this->pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
-    }
-
     public function addUser($name, $email, $password)
     {
         if ($this->pdo) {

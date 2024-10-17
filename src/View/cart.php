@@ -1,23 +1,3 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in."; // Отладочный вывод
-    header("Location:/login");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-var_dump($user_id); // Отладочный вывод
-
-$pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
-$stmt = $pdo->prepare("SELECT products.name AS productName, products.image AS image, products.description, products.price, users.name AS userName, user_products.amount
-    FROM user_products
-    JOIN users ON users.id = user_products.user_id
-    JOIN products ON products.id = user_products.product_id
-    WHERE user_products.user_id = :user_id");
-$stmt->execute(['user_id' => $user_id]);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,12 +58,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container mt-5 pb-5">
     <h2 class="text-center text-uppercase font-weight-bold mb-5">Оформление заказа</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <?php foreach ($products as $product): ?>
+        <?php foreach ($products as $product):?>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0 rounded-lg">
-                    <img class="card-img-top rounded-top" src="<?php echo $product['image_link']; ?>" alt="Card image">
+                    <img class="card-img-top rounded-top" src="<?php echo $product['image']; ?>" alt="Card image">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product['product_name']; ?></h5>
+                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product['productname']; ?></h5>
                         <p class="card-text text-muted"><?php echo $product['description']; ?></p>
                         <div class="price">
                             <span class="text-muted">Цена:</span>

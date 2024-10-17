@@ -3,13 +3,8 @@ namespace Model;
 
 use \PDO;
 
-class Product {
-    private $pdo;
-
-    public function __construct() {
-        $this->pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
-    }
-
+class Product extends Model
+{
     public function getAllProducts() {
         $stmt = $this->pdo->query("SELECT * FROM products");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -17,7 +12,7 @@ class Product {
 
     public function getMaxProductId() {
         $stmt = $this->pdo->query("SELECT MAX(id) FROM products");
-        return $stmt->fetch(PDO::FETCH_ASSOC)['max'] ?? 0;
+        return $stmt->fetch(PDO::FETCH_ASSOC)['max'] ?? null;
     }
 
     public function addUserProduct($userId, $productId, $amount) {
@@ -34,5 +29,15 @@ class Product {
         $stmt = $this->pdo->prepare("SELECT amount FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
         return $stmt->fetch(PDO::FETCH_ASSOC)['amount'] ?? 0;
+    }
+
+    public function getProductsByUserId($userId) {
+        $stmt = $this->pdo->prepare("SELECT products.name AS productName, products.image AS image, products.description, products.price, users.name AS userName, user_products.amount
+            FROM user_products
+            JOIN users ON users.id = user_products.user_id
+            JOIN products ON products.id = user_products.product_id
+            WHERE user_products.user_id = :user_id");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

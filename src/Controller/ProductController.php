@@ -14,7 +14,6 @@ class ProductController {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header("Location:/login");
-            exit();
         }
         $products = $this->productModel->getAllProducts();
         require_once './../View/catalog.php';
@@ -80,5 +79,18 @@ class ProductController {
             }
         }
         return $errors;
+    }
+
+    public function showCart()
+    {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            echo "User not logged in.";
+            header("Location:/login");
+            exit();
+        }
+        $userId = $_SESSION['userId'];
+        $products = $this->productModel->getProductsByUserId($userId);
+        require_once './../View/cart.php';
     }
 }
