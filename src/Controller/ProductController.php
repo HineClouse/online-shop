@@ -81,16 +81,23 @@ class ProductController {
         return $errors;
     }
 
-    public function showCart()
-    {
+    public function showCart() {
         session_start();
         if (!isset($_SESSION['userId'])) {
             echo "User not logged in.";
             header("Location:/login");
             exit();
         }
+
         $userId = $_SESSION['userId'];
         $products = $this->productModel->getProductsByUserId($userId);
+
+        $totalSum = 0;
+        foreach ($products as $product) {
+            $totalSum += $product['sumproduct'];
+        }
+
         require_once './../View/cart.php';
     }
+
 }

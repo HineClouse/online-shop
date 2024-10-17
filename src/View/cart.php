@@ -47,18 +47,25 @@
         .text-muted {
             color: #6c757d !important;
         }
-        .price, .amount {
+        .price, .amount, .sum-product, .total-sum {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
+        }
+        .total-sum {
+            border-top: 2px solid #ffc107;
+            padding-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
 <body>
 <div class="container mt-5 pb-5">
-    <h2 class="text-center text-uppercase font-weight-bold mb-5">Оформление заказа</h2>
+    <h2 class="text-center text-uppercase font-weight-bold mb-5">Корзина</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <?php foreach ($products as $product):?>
+        <?php foreach ($products as $product): ?>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0 rounded-lg">
                     <img class="card-img-top rounded-top" src="<?php echo $product['image']; ?>" alt="Card image">
@@ -73,10 +80,19 @@
                             <span class="text-muted">Количество:</span>
                             <span class="text-dark font-weight-bold"><?php echo $product['amount']; ?></span>
                         </div>
+                        <div class="sum-product">
+                            <span class="text-muted">Итого:</span>
+                            <span class="text-dark font-weight-bold"><?php echo $product['sumproduct']; ?> руб.</span>
+                        </div>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
+    </div>
+    <div class="total-sum">
+        <span>Общая сумма:</span>
+        <span><?php echo $totalSum; ?> руб.</span>
+        <button type="submit" class="btn btn-warning w-100 mt-2">Оформить заказ</button>
     </div>
 </div>
 </body>

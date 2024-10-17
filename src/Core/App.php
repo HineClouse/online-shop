@@ -4,46 +4,47 @@ namespace Core;
 
 class App
 {
-    private array $routes = [
-        '/login' => [
-            'GET' => [
-                'class' => '\Controller\UserController',
-                'method' => 'getLoginForm'
-            ],
-            'POST' => [
-                'class' => '\Controller\UserController',
-                'method' => 'login'
-            ]
-        ],
-        '/registration' => [
-            'GET' => [
-                'class' => '\Controller\UserController',
-                'method' => 'getRegistrationForm'
-            ],
-            'POST' => [
-                'class' => '\Controller\UserController',
-                'method' => 'registrate'
-            ]
-        ],
-        '/catalog' => [
-            'GET' => [
-                'class' => '\Controller\ProductController',
-                'method' => 'catalog'
-            ]
-        ],
-        '/add-product' => [
-            'POST' => [
-                'class' => '\Controller\ProductController',
-                'method' => 'addProduct'
-            ]
-        ],
-        '/cart' => [
-            'GET' => [
-                'class' => '\Controller\ProductController',
-                'method' => 'showCart'
-            ]
-        ],
-    ];
+    private array $routes = [];
+//    private array $routes = [
+//        '/login' => [
+//            'GET' => [
+//                'class' => '\Controller\UserController',
+//                'method' => 'getLoginForm'
+//            ],
+//            'POST' => [
+//                'class' => '\Controller\UserController',
+//                'method' => 'login'
+//            ]
+//        ],
+//        '/registration' => [
+//            'GET' => [
+//                'class' => '\Controller\UserController',
+//                'method' => 'getRegistrationForm'
+//            ],
+//            'POST' => [
+//                'class' => '\Controller\UserController',
+//                'method' => 'registrate'
+//            ]
+//        ],
+//        '/catalog' => [
+//            'GET' => [
+//                'class' => '\Controller\ProductController',
+//                'method' => 'catalog'
+//            ]
+//        ],
+//        '/add-product' => [
+//            'POST' => [
+//                'class' => '\Controller\ProductController',
+//                'method' => 'addProduct'
+//            ]
+//        ],
+//        '/cart' => [
+//            'GET' => [
+//                'class' => '\Controller\ProductController',
+//                'method' => 'showCart'
+//            ]
+//        ],
+//    ];
 
     public function run()
     {
@@ -68,8 +69,11 @@ class App
         }
     }
 
-    public function addRoute()
+    public function addRoute(string $path, string $method, string $class, string $function)
     {
-
+        $this->routes[$path][$method] = [
+            'class' => $class,
+            'method' => $function
+        ];
     }
 }
