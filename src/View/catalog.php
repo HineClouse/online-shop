@@ -22,6 +22,13 @@
                     </div>
                     <button type="submit" class="btn btn-warning w-100 mt-2">Добавить в корзину</button>
                 </form>
+                <!-- Кнопка для добавления в избранное -->
+                <form action="/add-to-favourites" method="POST" class="mt-2">
+                    <input type="hidden" name="productId" value="<?= $product['id'] ?? null ?>">
+                    <input type="hidden" name="amount" value="1">
+                    <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
+                    <button type="submit" class="btn btn-outline-danger w-100">Добавить в избранное</button>
+                </form>
             </div>
         <?php endforeach; ?>
     </div>
@@ -73,6 +80,14 @@
     }
     .btn-warning:hover {
         background-color: #e0a800;
+    }
+    .btn-outline-danger {
+        border: 1px solid #dc3545;
+        color: #dc3545;
+    }
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
     }
     .card {
         transition: box-shadow .3s ease-in-out;
