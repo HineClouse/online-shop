@@ -100,4 +100,22 @@ class ProductController {
         require_once './../View/cart.php';
     }
 
+    public function deleteProductFromCart() {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            header('Location: /login');
+            exit();
+        }
+
+        $userId = $_SESSION['userId'];
+        $productId = $_POST['product-id'];
+        $isProductInCart = $this->productModel->getByUserIdAndProductId($userId, (int)$productId);
+
+        if ($isProductInCart) {
+            $this->productModel->deleteProduct($userId, (int)$productId);
+            header('Location: /cart');
+            exit();
+        }
+    }
+
 }

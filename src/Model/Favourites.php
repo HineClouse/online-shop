@@ -13,7 +13,7 @@ class Favourites extends Model {
         $stmt->execute(['userId' => $user, 'productId' => $product, 'amount' => $amount, 'price' => $price]);
     }
 
-    public function plusProductAmountInCart(int $user, int $product, int $amount) {
+    public function updateProductAmountInCart(int $user, int $product, int $amount) {
         $stmt = $this->pdo->prepare("UPDATE user_products_favourites SET amount = :amount WHERE user_id = :userId AND product_id = :productId");
         $stmt->execute(['userId' => $user, 'productId' => $product, 'amount' => $amount]);
     }

@@ -13,8 +13,16 @@ class OrderController {
         $this->productModel = new Product();
     }
 
-    public function getOrderForm() {
-        require_once './../View/order.php';
+    public function getOrderForm()
+    {
+        session_start();
+        $userId = $_SESSION['userId'];
+        if (!isset($_SESSION['userId'])) {
+            header('Location: /login');
+        } else{
+            $allSum = $this->cartController->allSum();
+            require_once "./../View/order.php";
+        }
     }
 
     public function createOrder() {
@@ -60,5 +68,22 @@ class OrderController {
         $products = $this->orderModel->getOrderProducts($orderId);
 
         require_once './../View/order.php';
+    }
+    public function deleteProductFromCart() {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            header('Location: /login');
+            exit();
+        }
+
+        $userId = $_SESSION['userId'];
+        $productId = $_POST['product-id'];
+        $isProductInFavourites = $this->favourites->getByUserIdAndProductId($userId, (int)$productId);
+
+        if ($isProductInFavourites) {
+            $this->favourites->deleteProduct($userId, (int)$productId);
+            header('Location: /favourites');
+            exit();
+        }
     }
 }

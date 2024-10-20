@@ -14,7 +14,7 @@
                         <div class="col-2"><p
                                     class="cartItemQuantity p-1 text-center"><?php echo $product['amount']; ?></p></div>
                         <div class="col-2"><p id="cartItem1Price"> <?php echo "{$product['price']}руб" ?> </p></div>
-                        <form action="/deleteFromWishlist" method="POST">
+                        <form action="/deleteFromFavourites" method="POST">
                             <button type="submit">Удалить из Избранного <input type="hidden" id="product-id"
                                                                                name="product-id"
                                                                                value="<?= $product['id']?>" required>
