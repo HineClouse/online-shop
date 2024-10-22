@@ -14,8 +14,9 @@ class ProductController {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header("Location:/login");
+            exit();
         }
-        $products = $this->productModel->getAllProducts();
+        $products = $this->productModel->getAll();
         require_once './../View/catalog.php';
     }
 
@@ -25,7 +26,6 @@ class ProductController {
             header("Location:/login");
             exit();
         }
-
         $errors = $this->validateProduct();
         if (!empty($errors)) {
             foreach ($errors as $error) {
@@ -36,7 +36,6 @@ class ProductController {
             $productId = $_POST['product-id'];
             $amount = $_POST['amount'];
             $currentAmount = $this->productModel->getUserProductAmount($userId, $productId);
-
             if ($currentAmount > 0) {
                 $newAmount = $currentAmount + $amount;
                 $this->productModel->updateUserProduct($userId, $productId, $newAmount);
@@ -88,15 +87,12 @@ class ProductController {
             header("Location:/login");
             exit();
         }
-
         $userId = $_SESSION['userId'];
         $products = $this->productModel->getProductsByUserId($userId);
-
         $totalSum = 0;
         foreach ($products as $product) {
             $totalSum += $product['sumproduct'];
         }
-
         require_once './../View/cart.php';
     }
 
@@ -106,16 +102,17 @@ class ProductController {
             header('Location: /login');
             exit();
         }
-
         $userId = $_SESSION['userId'];
         $productId = $_POST['product-id'];
-        $isProductInCart = $this->productModel->getByUserIdAndProductId($userId, (int)$productId);
-
-        if ($isProductInCart) {
-            $this->productModel->deleteProduct($userId, (int)$productId);
-            header('Location: /cart');
+        if ($productId === null) {
+            echo "Product ID is missing!";
             exit();
         }
+        $isProductInCart = $this->productModel->getByUserIdAndProductId($userId, (int)$productId);
+        if ($isProductInCart) {
+            $this->productModel->deleteProduct($userId, (int)$productId);
+        }
+        header('Location: /cart');
+        exit();
     }
-
 }

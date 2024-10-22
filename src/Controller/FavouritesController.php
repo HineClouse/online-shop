@@ -63,7 +63,7 @@ class FavouritesController {
         foreach ($favouritesProducts as $elem) {
             $product = $this->product->getByProductId((int)$elem['product_id']);
             if ($product) {
-                $product['amount'] = $elem['amount'];
+                //$product['amount'] = $elem['amount'];
                 $productsInFavourites[] = $product;
             }
         }
@@ -79,7 +79,7 @@ class FavouritesController {
         }
 
         $userId = $_SESSION['userId'];
-        $productId = $_POST['product-id'] ?? null;
+        $productId = $_POST['product-id'];
 
         if ($productId === null) {
             echo "Product id is missing!";

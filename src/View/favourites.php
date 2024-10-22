@@ -11,8 +11,6 @@
                                                      alt="art image"></div>
                         <div class="col-5 mb-2"><h6 class=""><?php echo $product['name']; ?></h6>
                             <p class="pl-1 mb-0"><?php echo $product['description']; ?></p></div>
-                        <div class="col-2"><p
-                                    class="cartItemQuantity p-1 text-center"><?php echo $product['amount']; ?></p></div>
                         <div class="col-2"><p id="cartItem1Price"> <?php echo "{$product['price']}руб" ?> </p></div>
                         <form action="/deleteFromFavourites" method="POST">
                             <button type="submit">Удалить из Избранного <input type="hidden" id="product-id"

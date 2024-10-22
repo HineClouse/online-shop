@@ -1,5 +1,4 @@
 <?php
-
 namespace Controller;
 
 use Model\User;
@@ -25,6 +24,7 @@ class UserController {
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['psw'];
+
             if ($this->user->emailExists($email)) {
                 echo "Пользователь с таким email уже существует.";
             } else {
@@ -42,6 +42,7 @@ class UserController {
 
     private function validateRegistration(): array {
         $errors = [];
+
         if (isset($_POST['name'])) {
             $name = $_POST['name'];
             if (empty($name)) {
@@ -52,6 +53,7 @@ class UserController {
         } else {
             $errors['name'] = 'Поле name должно быть заполнено';
         }
+
         if (isset($_POST['email'])) {
             $email = $_POST['email'];
             if (empty($email)) {
@@ -62,6 +64,7 @@ class UserController {
         } else {
             $errors['email'] = 'Поле email должно быть заполнено';
         }
+
         if (isset($_POST['psw'])) {
             $password = $_POST['psw'];
             if (empty($password)) {
@@ -70,14 +73,16 @@ class UserController {
                 $errors['psw'] = "Пароль должен быть не менее 6 символов.";
             }
         }
+
         if (isset($_POST['psw-repeat'])) {
             $passwordRep = $_POST['psw-repeat'];
             if (empty($passwordRep)) {
                 $errors['psw-repeat'] = "Повтор пароля не должен быть пустым.";
-            } elseif ($password !== $passwordRep) {
+            } elseif ($_POST['psw'] !== $passwordRep) {
                 $errors['psw-repeat'] = "Пароли не совпадают.";
             }
         }
+
         return $errors;
     }
 
@@ -91,13 +96,13 @@ class UserController {
             $login = $_POST['login'];
             $password = $_POST['password'];
             $data = $this->user->getUserByEmail($login);
-            if ($data === false) {
+            if (empty($data)) {
                 $errors['login'] = 'Пользователь с указанными данными не существует';
             } else {
-                $passwordFromDb = $data['password'];
+                $passwordFromDb = $data->getPassword();
                 if (password_verify($password, $passwordFromDb)) {
                     session_start();
-                    $_SESSION['userId'] = $data['id'];
+                    $_SESSION['userId'] = $data->getId();
                     header("Location:/catalog");
                     exit();
                 } else {
@@ -107,7 +112,6 @@ class UserController {
         }
         require_once './../View/login.php';
     }
-
 
     private function validateLogin(): array {
         $errors = [];
@@ -119,6 +123,7 @@ class UserController {
         } else {
             $errors['login'] = 'Поле login должно быть заполнено';
         }
+
         if (isset($_POST['password'])) {
             $password = $_POST['password'];
             if (empty($password)) {
@@ -127,6 +132,7 @@ class UserController {
         } else {
             $errors['password'] = 'Поле password должно быть заполнено';
         }
+
         return $errors;
     }
 }

@@ -7,6 +7,7 @@
 
 <body>
 <div class="container mt-5 pb-5">
+    <div class="back"><a href="/catalog">&#11178; В каталог</a></div>
     <h2 class="text-center text-uppercase font-weight-bold mb-5">Корзина</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <?php foreach ($products as $product): ?>
@@ -28,10 +29,10 @@
                             <span class="text-muted">Итого:</span>
                             <span class="text-dark font-weight-bold"><?php echo $product['sumproduct']; ?> руб.</span>
                         </div>
-                        <form action="/deleteFromCart" method="POST">
+                        <form action="/delete-from-cart" method="POST">
                             <button type="submit">Удалить из корзины <input type="hidden" id="product-id"
                                                                             name="product-id"
-                                                                            value="<?= $product['id'] ?>" required>
+                                                                            value="<?= $product['productid'] ?>" required>
                             </button>
                         </form>
                     </div>

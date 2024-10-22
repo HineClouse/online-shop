@@ -49,32 +49,24 @@
     <h2 class="text-center">Оформить заказ</h2>
     <form action="/create-order" method="POST">
         <div class="form-group">
-            <label for="contact_name">Имя получателя</label>
-            <input type="text" id="contact_name" name="contact_name" required>
+            <label for="name">Имя</label>
+            <input type="text" id="name" name="name" required>
         </div>
         <div class="form-group">
-            <label for="contact_phone">Телефон</label>
-            <input type="tel" id="contact_phone" name="contact_phone" required>
+            <label for="family">Фамилия</label>
+            <input type="text" id="family" name="family" required>
         </div>
         <div class="form-group">
             <label for="city">Город</label>
             <input type="text" id="city" name="city" required>
         </div>
         <div class="form-group">
-            <label for="street">Улица</label>
-            <input type="text" id="street" name="street" required>
+            <label for="address">Адрес</label>
+            <input type="text" id="address" name="address" required>
         </div>
         <div class="form-group">
-            <label for="number_house">Номер дома</label>
-            <input type="text" id="number_house" name="number_house" required>
-        </div>
-        <div class="form-group">
-            <label for="stage">Этаж</label>
-            <input type="text" id="stage" name="stage" required>
-        </div>
-        <div class="form-group">
-            <label for="apartment">Квартира</label>
-            <input type="text" id="apartment" name="apartment" required>
+            <label for="phone">Телефон</label>
+            <input type="tel" id="phone" name="phone" required>
         </div>
         <div class="form-group">
             <label for="comment">Комментарий</label>
