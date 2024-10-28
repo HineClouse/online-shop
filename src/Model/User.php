@@ -15,13 +15,23 @@ class User extends Model {
     }
 
     public function getUserByEmail(string $email): ?self {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (empty($data)) {
-            return null;
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM users WHERE email = :email"
+            );
+            $stmt->execute(['email' => $email]);
+            $data = $stmt->fetch();
+
+            if (!$data) {
+                return null;
+            }
+
+            $user = new self();
+            $this->hydrate($data, $user);
+            return $user;
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Failed to get user: ' . $e->getMessage());
         }
-        return $this->hydrate($data);
     }
 
     public function getEmail(): string {
@@ -43,14 +53,30 @@ class User extends Model {
     public function emailExists(string $email): bool {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
-        return $stmt->fetchColumn() > 0;
+        return (bool)$stmt->fetchColumn();
     }
 
-    private function hydrate(array $data): self {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->email = $data['email'];
-        $this->password = $data['password'];
+    public function setId(int $id): User
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setName(string $name): User
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function setPassword(string $password): User
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function setEmail(string $email): User
+    {
+        $this->email = $email;
         return $this;
     }
 }

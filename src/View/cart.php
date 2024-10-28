@@ -1,54 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Корзина</title>
-
-<body>
+</head>
 <div class="container mt-5 pb-5">
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger">
+            <?= $_SESSION['error'] ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success">
+            <?= $_SESSION['success'] ?>
+        </div>
+        <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
+
     <div class="back"><a href="/catalog">&#11178; В каталог</a></div>
     <h2 class="text-center text-uppercase font-weight-bold mb-5">Корзина</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <?php foreach ($products as $product): ?>
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 rounded-lg">
-                    <img class="card-img-top rounded-top" src="<?php echo $product['image']; ?>" alt="Card image">
-                    <div class="card-body">
-                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product['productname']; ?></h5>
-                        <p class="card-text text-muted"><?php echo $product['description']; ?></p>
-                        <div class="price">
-                            <span class="text-muted">Цена:</span>
-                            <span class="text-dark font-weight-bold"><?php echo $product['price']; ?> руб.</span>
+    <?php if (empty($products)): ?>
+        <div class="alert alert-info">
+            Ваша корзина пуста. Перейдите в <a href="/catalog">каталог</a> для выбора товаров.
+        </div>
+    <?php else: ?>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <?php foreach ($products as $product): ?>
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 rounded-lg">
+                        <img class="card-img-top rounded-top"
+                             src="<?= $product->getImage() ?>"
+                             alt="<?= $product->getProductName() ?>">
+                        <div class="card-body">
+                            <h5 class="card-title text-center text-dark font-weight-bold">
+                                <?= $product->getProductName() ?>
+                            </h5>
+                            <p class="card-text text-muted">
+                                <?= $product['description'] ?>
+                            </p>
+                            <div class="price">
+                                <span class="text-muted">Цена:</span>
+                                <span class="text-dark font-weight-bold">
+                                    <?= $product['price']?> руб.
+                                </span>
+                            </div>
+                            <div class="amount">
+                                <span class="text-muted">Количество:</span>
+                                <span class="text-dark font-weight-bold">
+                                    <?= (int)$product['amount'] ?>
+                                </span>
+                            </div>
+                            <div class="sum-product">
+                                <span class="text-muted">Итого:</span>
+                                <span class="text-dark font-weight-bold">
+                                    <?= number_format($product['sumproduct'], 2) ?> руб.
+                                </span>
+                            </div>
+                            <form action="/delete-from-cart" method="POST" class="mt-3">
+                                <input type="hidden"
+                                       name="product-id"
+                                       value="<?= htmlspecialchars((string)$product['productid']) ?>"
+                                       required>
+                                <button type="submit" class="btn btn-danger w-100">
+                                    Удалить из корзины
+                                </button>
+                            </form>
                         </div>
-                        <div class="amount">
-                            <span class="text-muted">Количество:</span>
-                            <span class="text-dark font-weight-bold"><?php echo $product['amount']; ?></span>
-                        </div>
-                        <div class="sum-product">
-                            <span class="text-muted">Итого:</span>
-                            <span class="text-dark font-weight-bold"><?php echo $product['sumproduct']; ?> руб.</span>
-                        </div>
-                        <form action="/delete-from-cart" method="POST">
-                            <button type="submit">Удалить из корзины <input type="hidden" id="product-id"
-                                                                            name="product-id"
-                                                                            value="<?= $product['productid'] ?>" required>
-                            </button>
-                        </form>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-    <div class="total-sum">
-        <span>Общая сумма:</span>
-        <span><?php echo $totalSum; ?> руб.</span>
-        <form action="/order" method="GET" class="mt-2">
-            <button type="submit" class="btn btn-warning w-100 mt-2">Оформить заказ</button>
-        </form>
-    </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="total-sum mt-4">
+            <span>Общая сумма:</span>
+            <span><?= number_format($totalSum, 2) ?> руб.</span>
+            <form action="/order" method="GET" class="mt-2">
+                <button type="submit" class="btn btn-warning w-100 mt-2">
+                    Оформить заказ
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
 </div>
-</body>
 
     <style>
         body {

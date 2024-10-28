@@ -24,7 +24,7 @@ class Order extends Model
 
     public function getOrderById($orderId): ?self
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM orders WHERE id = :id');
+        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE id = :id");
         $stmt->execute(['id' => $orderId]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($data)) {
@@ -35,7 +35,7 @@ class Order extends Model
 
     public function getOrdersByUserId($userId)
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM orders WHERE user_id = :user_id');
+        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :user_id");
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -99,5 +99,53 @@ class Order extends Model
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function setId(int $id): Order
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function setName(string $name): Order
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function setFamily(string $family): Order
+    {
+        $this->family = $family;
+        return $this;
+    }
+
+    public function setCity(string $city): Order
+    {
+        $this->city = $city;
+        return $this;
+    }
+
+    public function setAddress(string $address): Order
+    {
+        $this->address = $address;
+        return $this;
+    }
+
+    public function setPhone(string $phone): Order
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+
+    public function setSum(float $sum): Order
+    {
+        $this->sum = $sum;
+        return $this;
+    }
+
+    public function setUserId(int $userId): Order
+    {
+        $this->userId = $userId;
+        return $this;
     }
 }

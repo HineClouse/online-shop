@@ -7,15 +7,15 @@
             <div class="col-12 col-sm-8 items">
                 <!--1--> <?php foreach ($productsInFavourites as $product): ?>
                     <div class="cartItem row align-items-start">
-                        <div class="col-3 mb-2"><img class="w-100" src="<?php echo $product['image']; ?>"
+                        <div class="col-3 mb-2"><img class="w-100" src="<?php echo $product->getImage(); ?>"
                                                      alt="art image"></div>
-                        <div class="col-5 mb-2"><h6 class=""><?php echo $product['name']; ?></h6>
-                            <p class="pl-1 mb-0"><?php echo $product['description']; ?></p></div>
-                        <div class="col-2"><p id="cartItem1Price"> <?php echo "{$product['price']}руб" ?> </p></div>
+                        <div class="col-5 mb-2"><h6 class=""><?php echo $product->getName(); ?></h6>
+                            <p class="pl-1 mb-0"><?php echo $product->getDescription(); ?></p></div>
+                        <div class="col-2"><p id="cartItem1Price"> <?php echo "{$product->getPrice()}руб" ?> </p></div>
                         <form action="/deleteFromFavourites" method="POST">
                             <button type="submit">Удалить из Избранного <input type="hidden" id="product-id"
                                                                                name="product-id"
-                                                                               value="<?= $product['id']?>" required>
+                                                                               value="<?= $product->getId()?>" required>
                             </button>
                         </form>
                     </div>

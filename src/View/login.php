@@ -1,41 +1,45 @@
 <div class="main">
-<h1>GachiForGachi</h1>
-<h3>Enter your login </h3>
-    <?php echo $errors['login'] ?? '';?>
-    <?php echo $errors['password'] ?? '';?>
-<form action="/login" method="POST">
-    <label for="login">
+    <h1>GachiForGachi</h1>
+    <h3>Вход в систему</h3>
 
-        Username:
-    </label>
+    <?php if (isset($errors['general'])): ?>
+        <div class="error-message"><?php echo htmlspecialchars($errors['general']); ?></div>
+    <?php endif; ?>
 
-    <input type="login"
-           id="login"
-           name="login"
-           placeholder="Enter your Username" required>
+    <form action="/login" method="POST">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email"
+                   id="email"
+                   name="email"
+                   placeholder="Введите ваш email"
+                   value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
+                   required>
+            <?php if (isset($errors['email'])): ?>
+                <div class="error-message"><?php echo htmlspecialchars($errors['email']); ?></div>
+            <?php endif; ?>
+        </div>
 
-    <label for="password">
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Введите ваш пароль"
+                   required>
+            <?php if (isset($errors['password'])): ?>
+                <div class="error-message"><?php echo htmlspecialchars($errors['password']); ?></div>
+            <?php endif; ?>
+        </div>
 
-        Password:
-    </label>
-    <input type="password"
-           id="password"
-           name="password"
-           placeholder="Enter your Password" required>
+        <div class="wrap">
+            <button type="submit">Войти</button>
+        </div>
+    </form>
 
-    <div class="wrap">
-        <button type="submit"
-                onclick="solve()">
-            Submit
-        </button>
-    </div>
-</form>
-<p>Not registered?
-    <a href="#"
-       style="text-decoration: none;">
-        Create an account
-    </a>
-</p>
+    <p>Ещё нет аккаунта?
+        <a href="/register" class="link">Создать аккаунт</a>
+    </p>
 </div>
 
 <style>/*style.css*/

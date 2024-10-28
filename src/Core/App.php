@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Request\Request;
+
 class App
 {
     private array $routes = [];
@@ -59,7 +61,8 @@ class App
                 $method = $handler['method'];
 
                 $controller = new $class();
-                $controller->$method();
+                $request = new Request($requestUri, $requestMethod, $_POST);
+                return $controller->$method($request);
             } else {
                 echo "$requestMethod не поддерживается для $requestUri";
             }

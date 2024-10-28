@@ -48,6 +48,12 @@ class Favourites extends Model
         return $obj;
     }
 
+    public function setUserId(int $userId): Favourites
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
     // Getters
     public function getUserId(): int
     {

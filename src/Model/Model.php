@@ -12,4 +12,13 @@ class Model
     {
         $this->pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
     }
+
+    protected function hydrate(array $data, object $object): void {
+        foreach ($data as $property => $value) {
+            if (property_exists($object, $property)) {
+                $object->$property = $value;
+            }
+        }
+    }
+
 }

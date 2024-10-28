@@ -16,13 +16,12 @@ class OrderController {
     public function getOrderForm()
     {
         session_start();
-        $userId = $_SESSION['userId'];
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
-        } else{
-            $allSum = $this->allSum();
-            require_once "./../View/order.php";
-        }
+//        } else{
+//            $allSum = $this->allSum();
+//            require_once "./../View/order.php";
+       }
     }
 
     public function createOrder() {
@@ -35,14 +34,14 @@ class OrderController {
         $userId = $_SESSION['userId'];
         $errors = $this->validateOrder();
         if (empty($errors)) {
-            $name = $_POST['name'];
+            $name = $_POST['firstNamename'];
             $family = $_POST['family'];
             $city = $_POST['city'];
-            $address = $_POST['street'] . ' ' . $_POST['number_house'] . ', ' . $_POST['stage'] . ', ' . $_POST['apartment'];
+            $address = $_POST['address'];
             $phone = $_POST['phone'];
-            $sum = $_POST['all_sum'];
+            $sum = $this->allSum();
 
-            $this->orderModel->createOrderId($name, $family, $city, $address, $phone, $sum, $userId);
+            $this->orderModel->createOrder($name, $family, $city, $address, $phone, $sum, $userId);
 
             $orderId = $this->orderModel->getByUserIdToTakeOrderId($userId);
             $productsInCart = $this->productModel->getProductsByUserId($userId);

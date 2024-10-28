@@ -5,16 +5,42 @@ namespace Controller;
 use Model\Product;
 use Model\Favourites;
 
-class FavouritesController {
+class FavouritesController
+{
     private Product $product;
     private Favourites $favourites;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->product = new Product();
         $this->favourites = new Favourites();
     }
 
-    public function addProductToFavourites() {
+    public function getFavourites()
+    {
+        session_start();
+        if (!isset($_SESSION['userId'])) {
+            header('Location: /login');
+            exit();
+        }
+
+        $userId = $_SESSION['userId'];
+        $favouritesProducts = $this->favourites->getFavouritesByUserId($userId);
+        $productsInFavourites = [];
+
+        foreach ($favouritesProducts as $elem) {
+            $product = $this->product->getByProductId((int)$elem['product_id']);
+            if ($product) {
+                //$product['amount'] = $elem['amount'];
+                $productsInFavourites[] = $product;
+            }
+        }
+
+        require_once "./../View/favourites.php";
+    }
+
+    public function addProductToFavourites()
+    {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
@@ -39,7 +65,7 @@ class FavouritesController {
         $isProductInFavourites = $this->favourites->getByUserIdAndProductId($userId, (int)$productId);
 
         if (!$isProductInFavourites) {
-            $this->favourites->addProductToFavourites($userId, (int)$productId, (int)$amount, $price['price']);
+            $this->favourites->addProductToFavourites($userId, (int)$productId);
         } else {
             $newAmount = $amount + $isProductInFavourites['amount'];
             $this->favourites->updateProductAmountInCart($userId, (int)$productId, $newAmount);
@@ -49,29 +75,9 @@ class FavouritesController {
         exit();
     }
 
-    public function getFavourites() {
-        session_start();
-        if (!isset($_SESSION['userId'])) {
-            header('Location: /login');
-            exit();
-        }
 
-        $userId = $_SESSION['userId'];
-        $favouritesProducts = $this->favourites->getFavouritesByUserId($userId);
-        $productsInFavourites = [];
-
-        foreach ($favouritesProducts as $elem) {
-            $product = $this->product->getByProductId((int)$elem['product_id']);
-            if ($product) {
-                //$product['amount'] = $elem['amount'];
-                $productsInFavourites[] = $product;
-            }
-        }
-
-        require_once "./../View/favourites.php";
-    }
-
-    public function deleteProductFromFavourites() {
+    public function deleteProductFromFavourites()
+    {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
