@@ -4,7 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Корзина</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            transition: box-shadow .3s ease-in-out;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #ffc107;
+        }
+        .card:hover {
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        .price, .amount, .sum-product, .total-sum {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        .total-sum {
+            border-top: 2px solid #ffc107;
+            padding-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
+<body>
 <div class="container mt-5 pb-5">
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger">
@@ -20,60 +77,46 @@
         <?php unset($_SESSION['success']); ?>
     <?php endif; ?>
 
-    <div class="back"><a href="/catalog">&#11178; В каталог</a></div>
-    <h2 class="text-center text-uppercase font-weight-bold mb-5">Корзина</h2>
     <?php if (empty($products)): ?>
         <div class="alert alert-info">
             Ваша корзина пуста. Перейдите в <a href="/catalog">каталог</a> для выбора товаров.
         </div>
     <?php else: ?>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="card-deck">
             <?php foreach ($products as $product): ?>
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-0 rounded-lg">
-                        <img class="card-img-top rounded-top"
-                             src="<?= $product->getImage() ?>"
-                             alt="<?= $product->getProductName() ?>">
-                        <div class="card-body">
-                            <h5 class="card-title text-center text-dark font-weight-bold">
-                                <?= $product->getProductName() ?>
-                            </h5>
-                            <p class="card-text text-muted">
-                                <?= $product['description'] ?>
-                            </p>
-                            <div class="price">
-                                <span class="text-muted">Цена:</span>
-                                <span class="text-dark font-weight-bold">
-                                    <?= $product['price']?> руб.
+                <div class="card">
+                    <img class="card-img-top rounded-top"
+                         src="<?= htmlspecialchars($product->getImage()) ?>"
+                         alt="<?= htmlspecialchars($product->getName()) ?>">
+                    <div class="card-body">
+                        <h5 class="card-title text-center text-dark font-weight-bold">
+                            <?= htmlspecialchars($product->getName()) ?>
+                        </h5>
+                        <p class="card-text text-muted">
+                            <?= htmlspecialchars($product->getDescription()) ?>
+                        </p>
+                        <div class="price">
+                            <span class="text-muted">Цена:</span>
+                            <span class="text-dark font-weight-bold">
+                                    <?= htmlspecialchars($product->getPrice()) ?> руб.
                                 </span>
-                            </div>
-                            <div class="amount">
-                                <span class="text-muted">Количество:</span>
-                                <span class="text-dark font-weight-bold">
-                                    <?= (int)$product['amount'] ?>
+                        </div>
+                        <div class="amount">
+                            <span class="text-muted">Количество:</span>
+                            <span class="text-dark font-weight-bold">
+                                    <?= htmlspecialchars($product->getAmount()) ?>
                                 </span>
-                            </div>
-                            <div class="sum-product">
-                                <span class="text-muted">Итого:</span>
-                                <span class="text-dark font-weight-bold">
-                                    <?= number_format($product['sumproduct'], 2) ?> руб.
+                        </div>
+                        <div class="sum-product">
+                            <span class="text-muted">Итого:</span>
+                            <span class="text-dark font-weight-bold">
+                                    <?= number_format($product->getPrice() * $product->getAmount(), 2) ?> руб.
                                 </span>
-                            </div>
-                            <form action="/delete-from-cart" method="POST" class="mt-3">
-                                <input type="hidden"
-                                       name="product-id"
-                                       value="<?= htmlspecialchars((string)$product['productid']) ?>"
-                                       required>
-                                <button type="submit" class="btn btn-danger w-100">
-                                    Удалить из корзины
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
-
         <div class="total-sum mt-4">
             <span>Общая сумма:</span>
             <span><?= number_format($totalSum, 2) ?> руб.</span>
@@ -85,73 +128,5 @@
         </div>
     <?php endif; ?>
 </div>
-
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card {
-            transition: box-shadow .3s ease-in-out;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid #ffc107;
-        }
-
-        .card:hover {
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
-        }
-
-        .text-muted {
-            color: #6c757d !important;
-        }
-
-        .price, .amount, .sum-product, .total-sum {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-        }
-
-        .total-sum {
-            border-top: 2px solid #ffc107;
-            padding-top: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
-</head>
-
+</body>
 </html>

@@ -2,6 +2,7 @@
 namespace Model;
 
 use PDO;
+use PDOException;
 
 class User extends Model {
     private int $id;
@@ -9,31 +10,36 @@ class User extends Model {
     private string $password;
     private string $email;
 
-    public function addUser(string $name, string $email, string $password): bool {
-        $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
-        return $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password]);
+    // Метод добавления пользователя в БД
+    public static function addUser(string $name, string $email, string $password): bool {
+        try {
+            $stmt = self::getPDO()->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+            return $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password]);
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Ошибка при добавлении пользователя: ' . $e->getMessage());
+        }
     }
 
-    public function getUserByEmail(string $email): ?self {
+    // Метод для получения пользователя по email
+    public static function getUserByEmail(string $email): ?self {
         try {
-            $stmt = $this->pdo->prepare(
-                "SELECT * FROM users WHERE email = :email"
-            );
+            $stmt = self::getPDO()->prepare("SELECT * FROM users WHERE email = :email");
             $stmt->execute(['email' => $email]);
-            $data = $stmt->fetch();
+            $data = $stmt->fetch(PDO::FETCH_ASSOC); // добавлен режим возврата ассоциативного массива
 
             if (!$data) {
                 return null;
             }
 
             $user = new self();
-            $this->hydrate($data, $user);
+            self::hydrate($data, $user); // исправлен вызов метода
             return $user;
         } catch (PDOException $e) {
-            throw new \RuntimeException('Failed to get user: ' . $e->getMessage());
+            throw new \RuntimeException('Ошибка при получении пользователя: ' . $e->getMessage());
         }
     }
 
+    // Геттеры
     public function getEmail(): string {
         return $this->email;
     }
@@ -50,32 +56,34 @@ class User extends Model {
         return $this->id;
     }
 
-    public function emailExists(string $email): bool {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
-        return (bool)$stmt->fetchColumn();
+    // Проверка существования email
+    public static function emailExists(string $email): bool {
+        try {
+            $stmt = self::getPDO()->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
+            $stmt->execute(['email' => $email]);
+            return (bool)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Ошибка при проверке существования email: ' . $e->getMessage());
+        }
     }
 
-    public function setId(int $id): User
-    {
+    // Сеттеры с возвратом текущего объекта для "цепочек вызовов"
+    public function setId(int $id): User {
         $this->id = $id;
         return $this;
     }
 
-    public function setName(string $name): User
-    {
+    public function setName(string $name): User {
         $this->name = $name;
         return $this;
     }
 
-    public function setPassword(string $password): User
-    {
+    public function setPassword(string $password): User {
         $this->password = $password;
         return $this;
     }
 
-    public function setEmail(string $email): User
-    {
+    public function setEmail(string $email): User {
         $this->email = $email;
         return $this;
     }

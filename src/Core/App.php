@@ -2,58 +2,15 @@
 
 namespace Core;
 
-use Request\Request;
-
 class App
 {
-    private array $routes = [];
-//    private array $routes = [
-//        '/login' => [
-//            'GET' => [
-//                'class' => '\Controller\UserController',
-//                'method' => 'getLoginForm'
-//            ],
-//            'POST' => [
-//                'class' => '\Controller\UserController',
-//                'method' => 'login'
-//            ]
-//        ],
-//        '/registration' => [
-//            'GET' => [
-//                'class' => '\Controller\UserController',
-//                'method' => 'getRegistrationForm'
-//            ],
-//            'POST' => [
-//                'class' => '\Controller\UserController',
-//                'method' => 'registrate'
-//            ]
-//        ],
-//        '/catalog' => [
-//            'GET' => [
-//                'class' => '\Controller\ProductController',
-//                'method' => 'catalog'
-//            ]
-//        ],
-//        '/add-product' => [
-//            'POST' => [
-//                'class' => '\Controller\ProductController',
-//                'method' => 'addProduct'
-//            ]
-//        ],
-//        '/cart' => [
-//            'GET' => [
-//                'class' => '\Controller\ProductController',
-//                'method' => 'showCart'
-//            ]
-//        ],
-//    ];
-
     public function run()
     {
         $requestUri = $_SERVER['REQUEST_URI'];
         if (isset($this->routes[$requestUri])) {
             $requestMethod = $_SERVER['REQUEST_METHOD'];
             $routeMethod = $this->routes[$requestUri];
+
             if (isset($routeMethod[$requestMethod])) {
                 $handler = $routeMethod[$requestMethod];
 
@@ -61,8 +18,14 @@ class App
                 $method = $handler['method'];
 
                 $controller = new $class();
-                $request = new Request($requestUri, $requestMethod, $_POST);
-                return $controller->$method($request);
+
+                $requestClass = "\\Request\\" . ucfirst($method) . "Request";
+                if (class_exists($requestClass)) {
+                    $request = new $requestClass($requestUri, $requestMethod, $_POST);
+                    $controller->$method($request);
+                } else {
+                    $controller->$method();
+                }
             } else {
                 echo "$requestMethod не поддерживается для $requestUri";
             }
@@ -71,6 +34,7 @@ class App
             require_once "./../View/404.php";
         }
     }
+
 
     public function addRoute(string $path, string $method, string $class, string $function)
     {

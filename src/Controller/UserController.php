@@ -17,26 +17,30 @@ class UserController {
     }
 
     public function registrate(RegistrateRequest $request) {
-        $errors = $request->validate();
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                echo $error . "<br>";
-            }
-        } else {
-            $name = $request->getName();
-            $email = $request->getEmail();
-            $password = $request->getPassword();
-            if ($this->user->emailExists($email)) {
-                echo "Пользователь с таким email уже существует.";
+        try {
+            $errors = $request->validate();
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    echo $error . "<br>";
+                }
             } else {
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                if ($this->user->addUser($name, $email, $hash)) {
-                    header("Location:/login");
-                    exit();
+                $name = $request->getName();
+                $email = $request->getEmail();
+                $password = $request->getPassword();
+                if ($this->user->emailExists($email)) {
+                    echo "Пользователь с таким email уже существует.";
                 } else {
-                    echo "Ошибка при добавлении пользователя.";
+                    $hash = password_hash($password, PASSWORD_DEFAULT);
+                    if (User::addUser($name, $email, $hash)) {
+                        header("Location:/login");
+                        exit();
+                    } else {
+                        echo "Ошибка при добавлении пользователя.";
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            echo "Произошла ошибка: " . $e->getMessage();
         }
         require_once './../View/registration.php';
     }
@@ -46,24 +50,28 @@ class UserController {
     }
 
     public function login(LoginRequest $request) {
-        $errors = $request->validate();
-        if (empty($errors)) {
-            $login = $request->getEmail();
-            $password = $request->getPassword();
-            $data = $this->user->getUserByEmail($login);
-            if (empty($data)) {
-                $errors['login'] = 'Пользователь с указанными данными не существует';
-            } else {
-                $passwordFromDb = $data->getPassword();
-                if (password_verify($password, $passwordFromDb)) {
-                    session_start();
-                    $_SESSION['userId'] = $data->getId();
-                    header("Location:/catalog");
-                    exit();
+        try {
+            $errors = $request->validate();
+            if (empty($errors)) {
+                $login = $request->getEmail();
+                $password = $request->getPassword();
+                $data = $this->user->getUserByEmail($login);
+                if (empty($data)) {
+                    $errors['login'] = 'Пользователь с указанными данными не существует';
                 } else {
-                    $errors['password'] = 'Неверный пароль';
+                    $passwordFromDb = $data->getPassword();
+                    if (password_verify($password, $passwordFromDb)) {
+                        session_start();
+                        $_SESSION['userId'] = $data->getId();
+                        header("Location:/catalog");
+                        exit();
+                    } else {
+                        $errors['password'] = 'Неверный пароль';
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            echo "Произошла ошибка: " . $e->getMessage();
         }
         require_once './../View/login.php';
     }

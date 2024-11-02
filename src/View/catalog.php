@@ -4,28 +4,32 @@
         <?php foreach ($products as $product): ?>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0 rounded-lg" style="border: 2px solid #ffc107;">
-                    <img class="card-img-top rounded-top" src="<?php echo $product['image']; ?>" alt="Card image">
+                    <img class="card-img-top rounded-top" src="<?php echo $product->getImage(); ?>" alt="Card image">
                     <div class="card-body">
-                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product['name']; ?></h5>
-                        <p class="card-text text-muted"><?php echo $product['description']; ?></p>
+                        <h5 class="card-title text-center text-dark font-weight-bold"><?php echo $product->getName(); ?></h5>
+                        <p class="card-text text-muted"><?php echo $product->getDescription(); ?></p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-dark font-weight-bold"><?php echo $product['price']; ?></span>
+                            <span class="text-dark font-weight-bold"><?php echo $product->getPrice(); ?> ₽</span>
                             <button class="btn btn-sm btn-outline-dark">Подробнее</button>
                         </div>
                     </div>
                 </div>
+
+
                 <form action="/add-product" method="POST" class="mt-3">
-                    <input type="hidden" name="product-id" value="<?= $product['id'] ?>">
+                    <input type="hidden" name="product-id" value="<?= $product->getId(); ?>">
                     <div class="form-group">
                         <label for="amount" class="form-label">Количество</label>
                         <input type="number" name="amount" id="amount" class="form-control" placeholder="Количество" required>
                     </div>
                     <button type="submit" class="btn btn-warning w-100 mt-2">Добавить в корзину</button>
                 </form>
+
+
                 <form action="/add-to-favourites" method="POST" class="mt-2">
-                    <input type="hidden" name="productId" value="<?= $product['id']?>">
+                    <input type="hidden" name="productId" value="<?= $product->getId(); ?>">
                     <input type="hidden" name="amount" value="1">
-                    <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
+                    <input type="hidden" name="price" value="<?php echo $product->getPrice(); ?>">
                     <button type="submit" class="btn btn-outline-danger w-100">Добавить в избранное</button>
                 </form>
             </div>
@@ -34,6 +38,7 @@
 </div>
 
 <style>
+    /* Стили для каталога */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(to right, #ffecd2, #fcb69f);

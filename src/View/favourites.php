@@ -1,27 +1,62 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<main id="cart" style="max-width:960px">
-    <div class="back"><a href="/catalog ">&#11178; В каталог</a></div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<div class="container">
     <h1>Избранное</h1>
-    <div class="container-fluid">
-        <div class="row align-items-start">
-            <div class="col-12 col-sm-8 items">
-                <!--1--> <?php foreach ($productsInFavourites as $product): ?>
-                    <div class="cartItem row align-items-start">
-                        <div class="col-3 mb-2"><img class="w-100" src="<?php echo $product->getImage(); ?>"
-                                                     alt="art image"></div>
-                        <div class="col-5 mb-2"><h6 class=""><?php echo $product->getName(); ?></h6>
-                            <p class="pl-1 mb-0"><?php echo $product->getDescription(); ?></p></div>
-                        <div class="col-2"><p id="cartItem1Price"> <?php echo "{$product->getPrice()}руб" ?> </p></div>
-                        <form action="/deleteFromFavourites" method="POST">
-                            <button type="submit">Удалить из Избранного <input type="hidden" id="product-id"
-                                                                               name="product-id"
-                                                                               value="<?= $product->getId()?>" required>
-                            </button>
-                        </form>
-                    </div>
-                    <hr>                <?php endforeach; ?>            </div>
+
+    <?php if (isset($_SESSION['errors'])): ?>
+        <div class="alert alert-danger">
+            <?php foreach ($_SESSION['errors'] as $error): ?>
+                <p><?= htmlspecialchars($error) ?></p>
+            <?php endforeach; ?>
+            <?php unset($_SESSION['errors']); ?>
         </div>
-    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success">
+            <p><?= htmlspecialchars($_SESSION['success']) ?></p>
+            <?php unset($_SESSION['success']); ?>
+        </div>
+    <?php endif; ?>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Изображение</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена</th>
+            <th>Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($productsInFavourites as $product): ?>
+            <tr>
+                <td>
+                    <?php
+                    $imagePath = htmlspecialchars($product->getImage());
+                    echo "Путь к изображению: $imagePath"; // Для отладки
+                    if (file_exists($imagePath)): ?>
+                        <img src="<?= $imagePath ?>" alt="<?= htmlspecialchars($product->getName()) ?>" style="width: 100px; height: auto;">
+                    <?php else: ?>
+                        <p>Изображение не доступно</p>
+                    <?php endif; ?>
+                </td>
+                <td><?= htmlspecialchars($product->getName()) ?></td>
+                <td><?= htmlspecialchars($product->getDescription()) ?></td>
+                <td><?= htmlspecialchars($product->getPrice()) ?> ₽</td>
+                <td>
+                    <form action="/deleteFromFavourites" method="POST">
+                        <input type="hidden" name="product-id" value="<?= $product->getId() ?>">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+
 </main>
 <footer class="container"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>

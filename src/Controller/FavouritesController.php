@@ -5,19 +5,16 @@ namespace Controller;
 use Model\Product;
 use Model\Favourites;
 
-class FavouritesController
-{
+class FavouritesController {
     private Product $product;
     private Favourites $favourites;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->product = new Product();
         $this->favourites = new Favourites();
     }
 
-    public function getFavourites()
-    {
+    public function getFavourites() {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
@@ -31,7 +28,6 @@ class FavouritesController
         foreach ($favouritesProducts as $elem) {
             $product = $this->product->getByProductId((int)$elem['product_id']);
             if ($product) {
-                //$product['amount'] = $elem['amount'];
                 $productsInFavourites[] = $product;
             }
         }
@@ -39,66 +35,63 @@ class FavouritesController
         require_once "./../View/favourites.php";
     }
 
-    public function addProductToFavourites()
-    {
+    public function addProductToFavourites() {
         session_start();
         if (!isset($_SESSION['userId'])) {
-            header('Location: /login');
+            header("Location:/login");
             exit();
         }
 
         $userId = $_SESSION['userId'];
-        $productId = $_POST['productId'] ?? null;
-        $amount = $_POST['amount'] ?? 1;
-
-        if ($productId === null) {
-            echo "Product id is missing!";
+        if (!isset($_POST['product-id'])) {
+            $_SESSION['errors'] = ["Не указан идентификатор товара."];
+            header("Location: /catalog");
             exit();
         }
 
-        $price = $this->product->getByProductId((int)$productId);
-        if (!$price) {
-            echo "Invalid product ID!";
+        $productId = (int)$_POST['product-id'];
+
+        // Проверка, существует ли продукт
+        $product = $this->product->getByProductId($productId);
+        if (!$product) {
+            $_SESSION['errors'] = ["Товар с данным идентификатором не найден."];
+            header("Location: /catalog");
             exit();
         }
 
-        $isProductInFavourites = $this->favourites->getByUserIdAndProductId($userId, (int)$productId);
-
-        if (!$isProductInFavourites) {
-            $this->favourites->addProductToFavourites($userId, (int)$productId);
+        if ($this->favourites->addProductToFavourites($userId, $productId)) {
+            $_SESSION['success'] = "Товар добавлен в избранное";
         } else {
-            $newAmount = $amount + $isProductInFavourites['amount'];
-            $this->favourites->updateProductAmountInCart($userId, (int)$productId, $newAmount);
+            $_SESSION['errors'] = ["Не удалось добавить товар в избранное"];
         }
 
-        header('Location: /favourites');
+        header("Location: /catalog");
         exit();
     }
 
-
-    public function deleteProductFromFavourites()
-    {
+    public function deleteProduct() {
         session_start();
         if (!isset($_SESSION['userId'])) {
-            header('Location: /login');
+            header("Location:/login");
             exit();
         }
 
         $userId = $_SESSION['userId'];
-        $productId = $_POST['product-id'];
-
-        if ($productId === null) {
-            echo "Product id is missing!";
+        if (!isset($_POST['product-id'])) {
+            $_SESSION['errors'] = ["Не указан идентификатор товара."];
+            header("Location: /favourites");
             exit();
         }
 
-        $isProductInFavourites = $this->favourites->getByUserIdAndProductId($userId, (int)$productId);
+        $productId = (int)$_POST['product-id'];
 
-        if ($isProductInFavourites) {
-            $this->favourites->deleteProduct($userId, (int)$productId);
+        if ($this->favourites->deleteProduct($userId, $productId)) {
+            $_SESSION['success'] = "Товар удален из избранного";
+        } else {
+            $_SESSION['errors'] = ["Не удалось удалить товар из избранного"];
         }
 
-        header('Location: /favourites');
+        header("Location: /favourites");
         exit();
     }
 }

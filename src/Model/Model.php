@@ -6,19 +6,24 @@ use PDO;
 
 class Model
 {
-    protected PDO $pdo;
+    private static PDO $pdo;
 
-    public function __construct()
+    public static function getPDO(): PDO
     {
-        $this->pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
+        if (!isset(self::$pdo)) {
+            self::$pdo = new PDO("pgsql:host=postgres;port=5432;dbname=mydb", 'user', 'pwd');
+        }
+
+        return self::$pdo;
     }
 
-    protected function hydrate(array $data, object $object): void {
+    protected static function hydrate(array $data, object $object): void
+    {
         foreach ($data as $property => $value) {
-            if (property_exists($object, $property)) {
-                $object->$property = $value;
+            $setter = 'set' . ucfirst($property);
+            if (method_exists($object, $setter)) {
+                $object->$setter($value);
             }
         }
     }
-
 }

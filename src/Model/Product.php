@@ -3,209 +3,91 @@ namespace Model;
 
 use PDO;
 
-class Product extends Model {
+class Product extends Model
+{
     private int $id;
-    private Product $product;
-
-    private User $user;
-
+    private string $name;
+    private string $description;
+    private string $image;
+    private float $price;
     private int $amount;
 
-    public function __construct()
+    public function getAll(): array
     {
-        parent::__construct();
-        $this->product = new Product();
-        $this->user = new User();
-    }
+        $stmt = self::getPDO()->query("SELECT * FROM products");
+        $productsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    public function getAll() {
-        $stmt = $this->pdo->query("SELECT * FROM products");
-
-        $products = $stmt->fetchAll();
-        if(empty($products)){
-            return null;
+        $products = [];
+        foreach ($productsData as $productData) {
+            $product = new self();
+            // Используем hydrate из родительского класса
+            self::hydrate($productData, $product);
+            $products[] = $product;
         }
-        foreach ($products as &$product) {
-            $product = $this->hydrate($product);
-        }
-
         return $products;
     }
 
-    public function getMaxProductId() {
-        $stmt = $this->pdo->query("SELECT MAX(id) as max_id FROM products");
-        $result = $stmt->fetch();
-
-        if (empty($result)) {
-            return null;
-        }
-        return $this->hydrate($result);
-    }
-
-    // Проверка существования продукта и пользователя перед операциями
-    private function checkUserAndProduct($userId, $productId) {
-        // Проверяем пользователя
-        $userStmt = $this->pdo->prepare("SELECT id FROM users WHERE id = :user_id");
-        $userStmt->execute(['user_id' => $userId]);
-        if (!$userStmt->fetch()) {
-            return false;
-        }
-
-        // Проверяем продукт
-        $productStmt = $this->pdo->prepare("SELECT id FROM products WHERE id = :product_id");
-        $productStmt->execute(['product_id' => $productId]);
-        if (!$productStmt->fetch()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function addUserProduct($userId, $productId, $amount) {
-        if (!$this->checkUserAndProduct($userId, $productId)) {
-            return false;
-        }
-
-        $stmt = $this->pdo->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
-        return $stmt->execute([
-            'user_id' => $userId,
-            'product_id' => $productId,
-            'amount' => $amount
-        ]);
-    }
-
-    public function updateUserProduct($userId, $productId, $amount) {
-        if (!$this->checkUserAndProduct($userId, $productId)) {
-            return false;
-        }
-
-        $stmt = $this->pdo->prepare("UPDATE user_products SET amount = :amount WHERE user_id = :user_id AND product_id = :product_id");
-        return $stmt->execute([
-            'amount' => $amount,
-            'user_id' => $userId,
-            'product_id' => $productId
-        ]);
-    }
-
-    public function getUserProductAmount($userId, $productId) {
-        $stmt = $this->pdo->prepare("SELECT amount FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
-        $stmt->execute([
-            'user_id' => $userId,
-            'product_id' => $productId
-        ]);
-        $result = $stmt->fetch();
-        return $result ? (int)$result['amount'] : 0;
-    }
-
-    public function getProductsByUserId($userId) {
-        $stmt = $this->pdo->prepare("
-            SELECT 
-                p.name AS productname,
-                p.image AS image,
-                p.description,
-                p.price,
-                u.name AS userName,
-                up.amount,
-                up.product_id AS productid,
-                (p.price * up.amount) AS sumproduct
-            FROM user_products up
-            JOIN users u ON u.id = up.user_id
-            JOIN products p ON p.id = up.product_id
-            WHERE up.user_id = :user_id
-        ");
-        $stmt->execute(['user_id' => $userId]);
-        return $stmt->fetchAll();
-    }
-
-    public function getByProductId($productId) {
-        $stmt = $this->pdo->prepare("SELECT * FROM products WHERE id = :id");
+    public function getByProductId(int $productId): ?self
+    {
+        $stmt = self::getPDO()->prepare("SELECT * FROM products WHERE id = :id");
         $stmt->execute(['id' => $productId]);
-        $product = $stmt->fetch();
-        if ($product) {
-            return $this->hydrate($product);
+        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($productData) {
+            $product = new self();
+            // Используем hydrate из родительского класса
+            self::hydrate($productData, $product);
+            return $product;
         }
         return null;
     }
 
-    public function getByUserIdAndProductId($userId, $productId) {
-        $stmt = $this->pdo->prepare('SELECT * FROM user_products WHERE user_id = :user_id AND product_id = :product_id');
-        $stmt->execute([
-            'user_id' => $userId,
-            'product_id' => $productId
-        ]);
-        return $stmt->fetch();
+    public function getMaxProductId(): ?int
+    {
+        $stmt = self::getPDO()->query("SELECT MAX(id) FROM products");
+        return $stmt->fetchColumn();
     }
 
-    public function deleteProduct($userId, $productId) {
-        if (!$this->checkUserAndProduct($userId, $productId)) {
-            return false;
+    public function addUserProduct(int $userId, int $productId, int $amount): bool
+    {
+        $stmt = self::getPDO()->prepare("INSERT INTO cart (user_id, product_id, amount) VALUES (:userId, :productId, :amount)");
+        return $stmt->execute(['userId' => $userId, 'productId' => $productId, 'amount' => $amount]);
+    }
+
+    public function getCartProducts(int $userId): array
+    {
+        $stmt = self::getPDO()->prepare("
+        SELECT p.*, up.amount
+        FROM products p
+        JOIN user_products up ON p.id = up.product_id
+        WHERE up.user_id = :userId
+    ");
+        $stmt->execute(['userId' => $userId]);
+        $productsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $products = [];
+        foreach ($productsData as $productData) {
+            $product = new self();
+            self::hydrate($productData, $product);
+            $products[] = $product;
         }
-
-        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
-        return $stmt->execute([
-            'user_id' => $userId,
-            'product_id' => $productId
-        ]);
+        return $products;
     }
 
-    private function hydrate($data) {
-        $obj = new self();
-        $obj->id = (int)$data['id'];
-        $obj->name = $data['name'];
-        $obj->description = $data['description'];
-        $obj->image = $data['image'];
-        $obj->price = (float)$data['price'];
-        return $obj;
-    }
 
-    // Getters
-    public function getId() {
-        return $this->id;
-    }
+    // Геттеры
+    public function getId(): int { return $this->id; }
+    public function getName(): string { return $this->name; }
+    public function getDescription(): string { return $this->description; }
+    public function getImage(): string { return $this->image; }
+    public function getPrice(): float { return $this->price; }
+    public function getAmount(): int { return $this->amount; }
 
-    public function getName() {
-        return $this->name;
-    }
-
-    public function getDescription() {
-        return $this->description;
-    }
-
-    public function getImage() {
-        return $this->image;
-    }
-
-    public function getPrice() {
-        return $this->price;
-    }
-
-    public function setId(int $id): Product
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setName(string $name): Product
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function setDescription(string $description): Product
-    {
-        $this->description = $description;
-        return $this;
-    }
-
-    public function setImage(string $image): Product
-    {
-        $this->image = $image;
-        return $this;
-    }
-
-    public function setPrice(float $price): Product
-    {
-        $this->price = $price;
-        return $this;
-    }
+    // Сеттеры
+    public function setId(int $id): void { $this->id = $id; }
+    public function setName(string $name): void { $this->name = $name; }
+    public function setDescription(string $description): void { $this->description = $description; }
+    public function setImage(string $image): void { $this->image = $image; }
+    public function setPrice(float $price): void { $this->price = $price; }
+    public function setAmount(int $amount): void { $this->amount = $amount; }
 }

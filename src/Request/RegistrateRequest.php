@@ -1,65 +1,44 @@
 <?php
-
 namespace Request;
 
-class RegistrateRequest extends Request
-{
-    public function getName(): ?string
-    {
+class RegistrateRequest extends Request {
+    public function getName(): ?string {
         return $this->data['name'] ?? null;
     }
-    public function getEmail(): ?string
-    {
+
+    public function getEmail(): ?string {
         return $this->data['email'] ?? null;
     }
 
-    public function getPassword(): ?string
-    {
+    public function getPassword(): ?string {
         return $this->data['password'] ?? null;
     }
 
     public function validate(): array {
-
         $errors = [];
 
-        if (isset($data['name'])) {
-            $name = $_POST['name'];
-            if (empty($name)) {
-                $errors['name'] = "Имя не должно быть пустым.";
-            } elseif (strlen($name) < 2) {
-                $errors['name'] = "Имя не должно быть короче 2 букв.";
-            }
-        } else {
+        if (empty($this->data['name'])) {
             $errors['name'] = 'Поле name должно быть заполнено';
+        } elseif (strlen($this->data['name']) < 2) {
+            $errors['name'] = 'Имя не должно быть короче 2 букв.';
         }
 
-        if (isset($this->data['email'])) {
-            $email = $this->data['email'];
-            if (empty($email)) {
-                $errors['email'] = "Email не должен быть пустым.";
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = "Неверный формат email.";
-            }
-        } else {
+        if (empty($this->data['email'])) {
             $errors['email'] = 'Поле email должно быть заполнено';
+        } elseif (!filter_var($this->data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Неверный формат email.';
         }
 
-        if (isset($this->data['psw'])) {
-            $password = $this->data['psw'];
-            if (empty($password)) {
-                $errors['psw'] = "Пароль не должен быть пустым.";
-            } elseif (strlen($password) < 6) {
-                $errors['psw'] = "Пароль должен быть не менее 6 символов.";
-            }
+        if (empty($this->data['password'])) {
+            $errors['password'] = 'Пароль не должен быть пустым.';
+        } elseif (strlen($this->data['password']) < 6) {
+            $errors['password'] = 'Пароль должен быть не менее 6 символов.';
         }
 
-        if (isset($this->data['psw-repeat'])) {
-            $passwordRep = $this->data['psw-repeat'];
-            if (empty($passwordRep)) {
-                $errors['psw-repeat'] = "Повтор пароля не должен быть пустым.";
-            } elseif ($this->data['psw'] !== $passwordRep) {
-                $errors['psw-repeat'] = "Пароли не совпадают.";
-            }
+        if (empty($this->data['password_confirmation'])) {
+            $errors['password_confirmation'] = 'Повтор пароля не должен быть пустым.';
+        } elseif ($this->data['password'] !== $this->data['password_confirmation']) {
+            $errors['password_confirmation'] = 'Пароли не совпадают.';
         }
 
         return $errors;
