@@ -17,7 +17,7 @@ class UserController {
     }
 
     public function registrate(RegistrateRequest $request) {
-        try {
+
             $errors = $request->validate();
             if (!empty($errors)) {
                 foreach ($errors as $error) {
@@ -27,7 +27,7 @@ class UserController {
                 $name = $request->getName();
                 $email = $request->getEmail();
                 $password = $request->getPassword();
-                if ($this->user->emailExists($email)) {
+                if (User::emailExists($email)) {
                     echo "Пользователь с таким email уже существует.";
                 } else {
                     $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -39,9 +39,6 @@ class UserController {
                     }
                 }
             }
-        } catch (\Exception $e) {
-            echo "Произошла ошибка: " . $e->getMessage();
-        }
         require_once './../View/registration.php';
     }
 
@@ -50,12 +47,11 @@ class UserController {
     }
 
     public function login(LoginRequest $request) {
-        try {
             $errors = $request->validate();
             if (empty($errors)) {
                 $login = $request->getEmail();
                 $password = $request->getPassword();
-                $data = $this->user->getUserByEmail($login);
+                $data = User::getUserByEmail($login);
                 if (empty($data)) {
                     $errors['login'] = 'Пользователь с указанными данными не существует';
                 } else {
@@ -70,9 +66,6 @@ class UserController {
                     }
                 }
             }
-        } catch (\Exception $e) {
-            echo "Произошла ошибка: " . $e->getMessage();
-        }
         require_once './../View/login.php';
     }
 }
