@@ -4,27 +4,31 @@ namespace Controller;
 use Model\Order;
 use Model\Product;
 
-class OrderController {
+class OrderController
+{
     private Order $orderModel;
     private Product $productModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->orderModel = new Order();
         $this->productModel = new Product();
     }
 
-    public function getOrderForm() {
+    public function getOrderForm(): void
+    {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
             exit();
         }
 
-        $allSum = $this->allSum();
+        $allSum = $this->calculateTotalSum();
         require_once "./../View/order.php";
     }
 
-    public function createOrder() {
+    public function createOrder(): void
+    {
         session_start();
         if (!isset($_SESSION['userId'])) {
             header('Location: /login');
@@ -40,40 +44,48 @@ class OrderController {
             $city = $_POST['city'];
             $address = $_POST['address'];
             $phone = $_POST['phone'];
-            $sum = $this->allSum();
+            $sum = $this->calculateTotalSum();
 
             if ($this->orderModel->createOrder($name, $family, $city, $address, $phone, $sum, $userId)) {
                 $orderId = $this->orderModel->getByUserIdToTakeOrderId($userId);
 
-                $productsInCart = $this->productModel->getProductsByUserId($userId);
-                foreach ($productsInCart as $product) {
-                    $this->orderModel->addProductToOrder($orderId, $product['product_id'], $product['amount'], $product['price']);
-                }
+                if ($orderId) {
+                    $productsInCart = $this->productModel->getProductsByUserId($userId);
+                    foreach ($productsInCart as $product) {
+                        $this->orderModel->addProductToOrder(
+                            $orderId,
+                            $product['product_id'],
+                            $product['amount'],
+                            $product['price']
+                        );
+                    }
 
-                $this->productModel->deleteProduct($userId);
-                header('Location: /cart');
-                exit();
+                    $this->productModel->deleteProduct($userId);
+                    header('Location: /cart');
+                    exit();
+                }
             }
         }
 
-        $allSum = $this->allSum();
+        $allSum = $this->calculateTotalSum();
         require_once "./../View/order.php";
     }
 
-    private function allSum(): float {
+    private function calculateTotalSum(): float
+    {
         $userId = $_SESSION['userId'];
         $productsInCart = $this->productModel->getProductsByUserId($userId);
 
         $allSum = 0;
         foreach ($productsInCart as $product) {
-            $sum = $product['price'] * $product['amount'];
-            $allSum += $sum;
+            $allSum += $product['price'] * $product['amount'];
         }
 
         return $allSum;
     }
 
-    private function validateOrder(): array {
+    private function validateOrder(): array
+    {
         $errors = [];
 
         if (empty($_POST['firstName']) || strlen($_POST['firstName']) < 2 || strlen($_POST['firstName']) > 20 || !preg_match("/^[a-zA-Zа-яА-Я]+$/u", $_POST['firstName'])) {

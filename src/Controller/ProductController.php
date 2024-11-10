@@ -15,7 +15,9 @@ class ProductController
 
     private function checkAuth()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['userId'])) {
             header("Location:/login");
             exit();
@@ -29,13 +31,53 @@ class ProductController
         $userId = $_SESSION['userId'];
         $products = $this->productModel->getCartProducts($userId);
 
-        // Вычисляем общую сумму товаров в корзине
+// Вычисляем общую сумму товаров в корзине
         $totalSum = 0;
         foreach ($products as $product) {
             $totalSum += $product->getPrice() * $product->getAmount();
         }
 
         require_once './../View/cart.php';
+    }
+
+    public function deleteProductFromCart()
+    {
+// Убедитесь, что сессия инициализирована
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+// Проверка на наличие ID товара в POST
+        if (!isset($_POST['productId']) || !is_numeric($_POST['productId'])) {
+            $_SESSION['error'] = 'Неверный ID товара.';
+            header('Location: /cart');
+            exit();
+        }
+
+// Получаем ID товара и пользователя
+        $productId = (int)$_POST['productId'];
+
+// Проверка, что пользователь авторизован и у него есть ID
+        if (!isset($_SESSION['userId'])) {
+            $_SESSION['error'] = 'Пользователь не авторизован.';
+            header('Location: /login');
+            exit();
+        }
+
+        $userId = (int)$_SESSION['userId']; // Убедитесь, что ID пользователя доступен
+
+// Удаление товара из корзины
+        $deleted = $this->productModel->deleteProductFromCart($userId, $productId);
+
+        if ($deleted) {
+            $_SESSION['success'] = 'Товар успешно удален из корзины.';
+        } else {
+            $_SESSION['error'] = 'Произошла ошибка при удалении товара.';
+        }
+
+// Перенаправляем обратно на страницу корзины
+        header('Location: /cart');
+        exit;
     }
 
     public function catalog()

@@ -3,7 +3,8 @@ namespace Model;
 
 use PDO;
 
-class Order extends Model {
+class Order extends Model
+{
     private int $id;
     private string $name;
     private string $family;
@@ -13,20 +14,26 @@ class Order extends Model {
     private float $sum;
     private int $userId;
 
-    public function createOrder(string $name, string $family, string $city, string $address, string $phone, float $sum, int $userId): bool {
-        $stmt = self::getPDO()->prepare("INSERT INTO orders (name, family, city, address, phone, sum, user_id) VALUES (:name, :family, :city, :address, :phone, :sum, :user_id)");
+    public function createOrder(): bool
+    {
+        $stmt = self::getPDO()->prepare("
+            INSERT INTO orders (name, family, city, address, phone, sum, user_id) 
+            VALUES (:name, :family, :city, :address, :phone, :sum, :user_id)
+        ");
+
         return $stmt->execute([
-            'name' => $name,
-            'family' => $family,
-            'city' => $city,
-            'address' => $address,
-            'phone' => $phone,
-            'sum' => $sum,
-            'user_id' => $userId
+            'name' => $this->name,
+            'family' => $this->family,
+            'city' => $this->city,
+            'address' => $this->address,
+            'phone' => $this->phone,
+            'sum' => $this->sum,
+            'user_id' => $this->userId
         ]);
     }
 
-    public function getOrderById(int $orderId): ?self {
+    public function getOrderById(int $orderId): ?self
+    {
         $stmt = self::getPDO()->prepare("SELECT * FROM orders WHERE id = :id");
         $stmt->execute(['id' => $orderId]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -40,14 +47,20 @@ class Order extends Model {
         return $order;
     }
 
-    public function getOrdersByUserId(int $userId): array {
+    public function getOrdersByUserId(int $userId): array
+    {
         $stmt = self::getPDO()->prepare("SELECT * FROM orders WHERE user_id = :user_id");
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addProductToOrder(int $orderId, int $productId, int $amount, float $price): bool {
-        $stmt = self::getPDO()->prepare("INSERT INTO order_products (order_id, product_id, amount, price) VALUES (:order_id, :product_id, :amount, :price)");
+    public function addProductToOrder(int $orderId, int $productId, int $amount, float $price): bool
+    {
+        $stmt = self::getPDO()->prepare("
+            INSERT INTO order_products (order_id, product_id, amount, price) 
+            VALUES (:order_id, :product_id, :amount, :price)
+        ");
+
         return $stmt->execute([
             'order_id' => $orderId,
             'product_id' => $productId,
@@ -56,10 +69,16 @@ class Order extends Model {
         ]);
     }
 
-    public function getByUserIdToTakeOrderId(int $userId): ?int {
-        $stmt = self::getPDO()->prepare("SELECT id FROM orders WHERE user_id = :user_id ORDER BY id DESC LIMIT 1");
+    public function getByUserIdToTakeOrderId(int $userId): ?int
+    {
+        $stmt = self::getPDO()->prepare("
+            SELECT id FROM orders 
+            WHERE user_id = :user_id 
+            ORDER BY id DESC 
+            LIMIT 1
+        ");
         $stmt->execute(['user_id' => $userId]);
-        return $stmt->fetchColumn();
+        return $stmt->fetchColumn() ?: null;
     }
 
     public function getId(): int
